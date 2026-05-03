@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "@workspace/db";
-import { notificationsTable, usersTable, followsTable } from "@workspace/db";
-import { eq, count, desc } from "drizzle-orm";
+import { notificationsTable, usersTable, followsTable, postsTable } from "@workspace/db";
+import { eq, count, desc, and } from "drizzle-orm";
 import { AuthRequest } from "../middlewares/auth.js";
 import { emitNotification } from "../socket/socketHandler.js";
 import { io } from "../index.js";
@@ -18,6 +18,20 @@ async function formatNotification(n: typeof notificationsTable.$inferSelect) {
     .from(followsTable)
     .where(eq(followsTable.followingId, n.senderId));
 
+  const [post] = n.postId
+    ? await db.select().from(postsTable).where(eq(postsTable.id, n.postId)).limit(1)
+    : [];
+  let postAuthor: { id: string; username: string; displayName: string; profilePicture: string | null } | null = null;
+  if (post) {
+    const [author] = await db.select().from(usersTable).where(eq(usersTable.id, post.authorId)).limit(1);
+    postAuthor = {
+      id: author?.id ?? post.authorId,
+      username: author?.username ?? "",
+      displayName: author?.displayName ?? "",
+      profilePicture: author?.profilePicture ?? null,
+    };
+  }
+
   return {
     id: n.id,
     type: n.type,
@@ -31,6 +45,12 @@ async function formatNotification(n: typeof notificationsTable.$inferSelect) {
       followersCount: Number(followRow?.cnt ?? 0),
     },
     postId: n.postId ?? null,
+    post: post
+      ? {
+          id: post.id,
+          author: postAuthor,
+        }
+      : null,
     read: n.read,
     createdAt: n.createdAt.toISOString(),
   };

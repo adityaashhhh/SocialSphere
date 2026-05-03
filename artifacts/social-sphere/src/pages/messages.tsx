@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "wouter";
 import { CheckCheck, Check, MessageCircle, Send, ArrowLeft } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -52,6 +53,7 @@ interface Message {
 }
 
 export default function MessagesPage() {
+  const [location, setLocation] = useLocation();
   const { user } = useAuth();
   const { socket } = useSocket();
   const { toast } = useToast();
@@ -60,6 +62,7 @@ export default function MessagesPage() {
   const [messageText, setMessageText] = useState("");
   const [showConvList, setShowConvList] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sharedPostId = new URLSearchParams(location.split("?")[1] ?? "").get("share");
 
   const { data: conversationsData, isLoading: convsLoading } = useGetConversations({
     query: { queryKey: getGetConversationsQueryKey() },
@@ -113,6 +116,16 @@ export default function MessagesPage() {
     socket.on("newMessage", handleNewMessage);
     return () => { socket.off("newMessage", handleNewMessage); };
   }, [socket, selectedConvId, queryClient]);
+
+  useEffect(() => {
+    if (!sharedPostId || !following?.length || selectedConvId) return;
+    const first = following[0];
+    if (!first) return;
+    setSelectedConvId(first.id);
+    setShowConvList(false);
+    setLocation("/messages");
+    setMessageText(`Check this out: ${window.location.origin}/post/${sharedPostId}`);
+  }, [sharedPostId, following, selectedConvId, setLocation]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

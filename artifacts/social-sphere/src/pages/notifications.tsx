@@ -28,6 +28,15 @@ interface Notification {
     profilePicture?: string | null;
   };
   postId?: string;
+  post?: {
+    id: string;
+    author?: {
+      id: string;
+      username: string;
+      displayName: string;
+      profilePicture?: string | null;
+    } | null;
+  } | null;
   read: boolean;
   createdAt: string;
 }
@@ -47,6 +56,14 @@ const notificationText = (type: NotificationType) => {
     case "mention": return "mentioned you";
     default: return "interacted with you";
   }
+};
+
+const notificationContext = (n: Notification) => {
+  if (!n.post?.author) return null;
+  if (n.type === "like" || n.type === "comment") {
+    return `on ${n.post.author.displayName || n.post.author.username}'s post`;
+  }
+  return null;
 };
 
 export default function NotificationsPage() {
@@ -170,6 +187,12 @@ export default function NotificationsPage() {
                     <span className="font-semibold">Someone</span>
                   )}{" "}
                   {notificationText(n.type)}
+                  {notificationContext(n) && (
+                    <>
+                      {" "}
+                      <span className="text-muted-foreground">{notificationContext(n)}</span>
+                    </>
+                  )}
                   {n.postId && (
                     <>
                       {" "}

@@ -132,6 +132,10 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
     setShowShareDialog(false);
   };
 
+  const shareToFollowers = () => {
+    window.location.href = `/messages?share=${post.id}`;
+  };
+
   const isOwn = user?.id === post.author.id;
 
   return (
@@ -287,7 +291,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
             <DialogTitle>Share post</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <Button className="w-full justify-start gap-2" onClick={() => toast({ title: "Shared to followers" })}>
+            <Button className="w-full justify-start gap-2" onClick={shareToFollowers}>
               <Users className="w-4 h-4" />
               Share to followers
             </Button>
