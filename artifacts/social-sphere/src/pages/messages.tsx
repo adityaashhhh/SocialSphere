@@ -138,7 +138,7 @@ export default function MessagesPage() {
 
   const handleSend = () => {
     if (!messageText.trim() || !selectedConvId || !activeRecipient) return;
-    const text = messageText;
+    const text = messageText.trim();
     setMessageText("");
     sendMessage.mutate(
       { data: { recipientId: activeRecipient.id, text } },
@@ -158,8 +158,8 @@ export default function MessagesPage() {
   const getMessageStatus = (msg: Message) => {
     if (!user || msg.sender.id !== user.id) return null;
     const readCount = msg.readBy?.length ?? 0;
-    const delivered = readCount > 0;
-    const read = readCount > 1;
+    const delivered = readCount >= 1;
+    const read = readCount >= 2;
     return read ? <CheckCheck className="w-3.5 h-3.5 text-sky-500" /> : delivered ? <Check className="w-3.5 h-3.5 text-muted-foreground" /> : null;
   };
 
@@ -329,12 +329,17 @@ export default function MessagesPage() {
 
           <div className="p-4 border-t border-border">
             <div className="flex gap-2">
-              <Input
+              <textarea
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 bg-muted/30"
-                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                className="flex-1 min-h-12 max-h-40 resize-none rounded-md border border-input bg-muted/30 px-3 py-2 text-sm outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
                 data-testid="message-input"
                 autoComplete="off"
               />
