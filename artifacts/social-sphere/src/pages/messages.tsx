@@ -7,6 +7,8 @@ import {
   useSendMessage,
   getGetConversationsQueryKey,
   getGetConversationMessagesQueryKey,
+  useGetFollowing,
+  getGetFollowingQueryKey,
 } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { useSocket } from "@/lib/socket";
@@ -62,6 +64,12 @@ export default function MessagesPage() {
   const { data: conversationsData, isLoading: convsLoading } = useGetConversations({
     query: { queryKey: getGetConversationsQueryKey() },
   });
+  const { data: followingData } = useGetFollowing(user?.id ?? "", {
+    query: {
+      enabled: !!user?.id,
+      queryKey: getGetFollowingQueryKey(user?.id ?? ""),
+    },
+  });
 
   const { data: messagesData, isLoading: msgsLoading } = useGetConversationMessages(
     selectedConvId ?? "",
@@ -77,6 +85,13 @@ export default function MessagesPage() {
 
   const conversations = (conversationsData as any)?.conversations as Conversation[] | undefined;
   const messages = (messagesData as any)?.messages as Message[] | undefined;
+  const following = followingData as Participant[] | undefined;
+  const participants = conversations?.flatMap((conv) => conv.participants) ?? [];
+  const visiblePeople = [...participants, ...(following ?? [])].reduce<Participant[]>((acc, person) => {
+    if (!person || person.id === user?.id || acc.some((p) => p.id === person.id)) return acc;
+    acc.push(person);
+    return acc;
+  }, []);
 
   const selectedConv = conversations?.find((c) => c.id === selectedConvId);
   const otherParticipant = selectedConv?.participants.find((p) => p.id !== user?.id);
@@ -145,9 +160,9 @@ export default function MessagesPage() {
               </div>
             ))}
           </div>
-        ) : conversations && conversations.length > 0 ? (
+        ) : (conversations && conversations.length > 0) || visiblePeople.length > 0 ? (
           <div className="divide-y divide-border/50">
-            {conversations.map((conv) => {
+            {(conversations ?? []).map((conv) => {
               const other = conv.participants.find((p) => p.id !== user?.id);
               const isSelected = conv.id === selectedConvId;
               return (
@@ -187,6 +202,27 @@ export default function MessagesPage() {
                 </button>
               );
             })}
+            {visiblePeople
+              .filter((person) => !(conversations ?? []).some((conv) => conv.participants.some((p) => p.id === person.id)))
+              .map((person) => (
+                <button
+                  key={person.id}
+                  className="w-full flex items-center gap-3 p-4 text-left hover:bg-muted/30 transition-colors"
+                  onClick={() => handleSelectConv(person.id)}
+                  data-testid="conversation-item"
+                >
+                  <Avatar className="w-10 h-10 flex-shrink-0">
+                    <AvatarImage src={person.profilePicture ?? undefined} />
+                    <AvatarFallback className="bg-accent/20 text-accent font-semibold">
+                      {(person.displayName?.[0] ?? person.username?.[0] ?? "?").toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm truncate">{person.displayName ?? person.username}</p>
+                    <p className="text-xs text-muted-foreground truncate">@{person.username}</p>
+                  </div>
+                </button>
+              ))}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-40 text-center px-4">
