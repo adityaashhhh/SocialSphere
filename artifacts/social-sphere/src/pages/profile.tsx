@@ -107,7 +107,7 @@ function EditProfileDialog({
 
   const handleSave = () => {
     updateProfile.mutate(
-      { pathParams: { userId }, data: { displayName, bio } } as any,
+      { userId, data: { displayName, bio } },
       {
         onSuccess: () => {
           toast({ title: "Profile updated!" });
@@ -198,7 +198,7 @@ export default function ProfilePage() {
     const newFollowing = !effectiveFollowing;
     setIsFollowing(newFollowing);
     toggleFollowMutation.mutate(
-      { pathParams: { userId } } as any,
+      { userId },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetUserProfileQueryKey(userId) });

@@ -42,7 +42,7 @@ function CommentItem({ comment, postId, depth = 0 }: CommentItemProps) {
     setIsLiked(newLiked);
     setLikesCount((c) => (newLiked ? c + 1 : c - 1));
     toggleLike.mutate(
-      { pathParams: { commentId: comment.id } } as any,
+      { commentId: comment.id },
       {
         onError: () => {
           setIsLiked(!newLiked);
@@ -54,7 +54,7 @@ function CommentItem({ comment, postId, depth = 0 }: CommentItemProps) {
 
   const handleDelete = () => {
     deleteComment.mutate(
-      { pathParams: { commentId: comment.id } } as any,
+      { commentId: comment.id },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetCommentsQueryKey(postId) });
@@ -67,7 +67,7 @@ function CommentItem({ comment, postId, depth = 0 }: CommentItemProps) {
   const handleReply = () => {
     if (!replyText.trim()) return;
     replyToComment.mutate(
-      { pathParams: { commentId: comment.id }, data: { text: replyText } } as any,
+      { commentId: comment.id, data: { text: replyText } },
       {
         onSuccess: () => {
           setReplyText("");
@@ -172,7 +172,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const handleSubmit = () => {
     if (!text.trim() || !user) return;
     createComment.mutate(
-      { pathParams: { postId }, data: { text } } as any,
+      { postId, data: { text } },
       {
         onSuccess: () => {
           setText("");

@@ -72,7 +72,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
       setTimeout(() => setHeartAnim(false), 400);
     }
     toggleLike.mutate(
-      { pathParams: { postId: post.id } } as any,
+      { postId: post.id },
       {
         onError: () => {
           setIsLiked(!newLiked);
@@ -85,7 +85,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
 
   const handleDelete = () => {
     deletePost.mutate(
-      { pathParams: { postId: post.id } } as any,
+      { postId: post.id },
       {
         onSuccess: () => {
           toast({ title: "Post deleted" });
@@ -100,7 +100,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
   const handleEdit = () => {
     if (!editContent.trim()) return;
     updatePost.mutate(
-      { pathParams: { postId: post.id }, data: { content: editContent } } as any,
+      { postId: post.id, data: { content: editContent } },
       {
         onSuccess: () => {
           setIsEditing(false);

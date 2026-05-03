@@ -76,13 +76,13 @@ export default function NotificationsPage() {
   };
 
   const handleMarkRead = (id: string) => {
-    markRead.mutate({ pathParams: { notificationId: id } } as any, {
+    markRead.mutate({ notificationId: id }, {
       onSuccess: invalidate,
     });
   };
 
   const handleDelete = (id: string) => {
-    deleteNotification.mutate({ pathParams: { notificationId: id } } as any, {
+    deleteNotification.mutate({ notificationId: id }, {
       onSuccess: () => {
         invalidate();
         toast({ title: "Notification deleted" });
