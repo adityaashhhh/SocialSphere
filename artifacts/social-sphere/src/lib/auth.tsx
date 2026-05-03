@@ -17,6 +17,7 @@ setAuthTokenGetter(() => localStorage.getItem("accessToken"));
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("accessToken"));
+  const [isHydrated, setIsHydrated] = useState(false);
   const queryClient = useQueryClient();
   
   const { data: user, isLoading: isUserLoading } = useGetMe({
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     }
+    setIsHydrated(true);
   }, [token]);
 
   const login = async (data: LoginBody) => {
@@ -73,8 +75,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         user: user || null,
-        isAuthenticated: !!token && !!user,
-        isLoading: !!token ? isUserLoading : false,
+        isAuthenticated: isHydrated && !!token && !!user,
+        isLoading: !isHydrated || (!!token ? isUserLoading : false),
         login,
         register,
         logout,
