@@ -82,7 +82,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
       setTimeout(() => setHeartAnim(false), 400);
     }
     toggleLike.mutate(
-      { postId: post.id },
+      { data: { postId: post.id } } as any,
       {
         onError: () => {
           setIsLiked(!newLiked);
@@ -110,7 +110,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
   const handleEdit = () => {
     if (!editContent.trim()) return;
     updatePost.mutate(
-      { postId: post.id, data: { content: editContent } },
+      { data: { postId: post.id, content: editContent } } as any,
       {
         onSuccess: () => {
           setIsEditing(false);

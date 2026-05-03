@@ -43,7 +43,7 @@ function CommentItem({ comment, postId, depth = 0 }: CommentItemProps) {
     setIsLiked(newLiked);
     setLikesCount((c) => (newLiked ? c + 1 : c - 1));
     toggleLike.mutate(
-      { commentId: comment.id },
+      { data: { commentId: comment.id } } as any,
       {
         onError: () => {
           setIsLiked(!newLiked);
@@ -55,7 +55,7 @@ function CommentItem({ comment, postId, depth = 0 }: CommentItemProps) {
 
   const handleDelete = () => {
     deleteComment.mutate(
-      { commentId: comment.id },
+      { data: { commentId: comment.id } } as any,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetCommentsQueryKey(postId) });
