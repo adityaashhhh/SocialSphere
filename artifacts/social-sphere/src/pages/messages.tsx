@@ -61,6 +61,7 @@ export default function MessagesPage() {
   const [selectedConvId, setSelectedConvId] = useState<string | null>(null);
   const [messageText, setMessageText] = useState("");
   const [showConvList, setShowConvList] = useState(true);
+  const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const sharedPostId = new URLSearchParams(location.split("?")[1] ?? "").get("share");
 
@@ -140,7 +141,7 @@ export default function MessagesPage() {
     const text = messageText;
     setMessageText("");
     sendMessage.mutate(
-      { recipientId: activeRecipient.id, text } as any,
+      { data: { recipientId: activeRecipient.id, text } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetConversationsQueryKey() });
@@ -164,8 +165,8 @@ export default function MessagesPage() {
 
   const handleSelectConv = (personId: string) => {
     setSelectedConvId(personId);
+    setSelectedRecipientId(personId);
     setShowConvList(false);
-    setMessageText("");
   };
 
   const ConversationList = () => (
@@ -198,7 +199,7 @@ export default function MessagesPage() {
                     "w-full flex items-center gap-3 p-4 text-left hover:bg-muted/30 transition-colors",
                     isSelected && "bg-primary/10",
                   )}
-                  onClick={() => handleSelectConv(conv.id)}
+                  onClick={() => handleSelectConv(conv.participants.find((p) => p.id !== user?.id)?.id ?? conv.id)}
                   data-testid="conversation-item"
                 >
                   <Avatar className="w-10 h-10 flex-shrink-0">
@@ -335,6 +336,7 @@ export default function MessagesPage() {
                 className="flex-1 bg-muted/30"
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
                 data-testid="message-input"
+                autoComplete="off"
               />
               <Button
                 size="icon"
