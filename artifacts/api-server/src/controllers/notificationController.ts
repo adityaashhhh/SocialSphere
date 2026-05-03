@@ -32,6 +32,7 @@ async function formatNotification(n: typeof notificationsTable.$inferSelect) {
     };
   }
 
+  const actorName = sender?.displayName || sender?.username || "";
   return {
     id: n.id,
     type: n.type,
@@ -47,7 +48,7 @@ async function formatNotification(n: typeof notificationsTable.$inferSelect) {
     actor: {
       id: sender?.id ?? n.senderId,
       username: sender?.username ?? "",
-      displayName: sender?.displayName ?? "",
+      displayName: actorName,
       profilePicture: sender?.profilePicture ?? null,
     },
     postId: n.postId ?? null,

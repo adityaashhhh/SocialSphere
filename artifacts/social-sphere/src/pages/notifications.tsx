@@ -54,13 +54,18 @@ const notificationIcon = {
   mention: <Bell className="w-4 h-4 text-accent" />,
 };
 
-const notificationText = (type: NotificationType) => {
+const notificationText = (type: NotificationType, actor: string) => {
   switch (type) {
-    case "like": return "liked your post";
-    case "comment": return "commented on your post";
-    case "follow": return "started following you";
-    case "mention": return "mentioned you";
-    default: return "interacted with you";
+    case "like":
+      return `${actor} liked your post`;
+    case "comment":
+      return `${actor} commented on your post`;
+    case "follow":
+      return `${actor} started following you`;
+    case "mention":
+      return `${actor} mentioned you`;
+    default:
+      return `${actor} interacted with you`;
   }
 };
 
@@ -86,6 +91,8 @@ export default function NotificationsPage() {
 
   const notifications = (data as any)?.notifications as Notification[] | undefined;
   const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
+  const actorLabel = (n?: Notification) => n?.actor?.displayName || n?.actor?.username || n?.sender?.displayName || n?.sender?.username || "Someone";
+  const initial = (value?: string) => (value?.trim()?.[0] ?? "S").toUpperCase();
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey() });
 
@@ -173,7 +180,7 @@ export default function NotificationsPage() {
                 <Avatar className="w-10 h-10">
                   <AvatarImage src={n.sender?.profilePicture ?? undefined} />
                   <AvatarFallback className="bg-muted">
-                    {(n.sender?.displayName?.[0] ?? "?").toUpperCase()}
+                    {initial(n.actor?.displayName || n.actor?.username || n.sender?.displayName || n.sender?.username)}
                   </AvatarFallback>
                 </Avatar>
                 <span className="absolute -bottom-1 -right-1 bg-background rounded-full p-0.5">
@@ -183,16 +190,15 @@ export default function NotificationsPage() {
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm">
-                {n.actor ? (
+                  {n.actor ? (
                     <Link href={`/profile/${n.actor.id}`}>
                       <span className="font-semibold hover:underline cursor-pointer">
-                        {n.actor.displayName}
+                        {notificationText(n.type, actorLabel(n))}
                       </span>
                     </Link>
                   ) : (
                     <span className="font-semibold">Someone</span>
                   )}{" "}
-                  {notificationText(n.type)}
                   {notificationContext(n) && (
                     <>
                       {" "}
