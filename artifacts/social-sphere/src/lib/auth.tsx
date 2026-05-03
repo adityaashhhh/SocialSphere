@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { UserProfile, useGetMe, setAuthTokenGetter, useLoginUser, useRegisterUser, useLogoutUser, LoginBody, RegisterBody, getGetMeQueryKey } from "@workspace/api-client-react";
 
 interface AuthContextType {
@@ -16,8 +17,9 @@ setAuthTokenGetter(() => localStorage.getItem("accessToken"));
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("accessToken"));
+  const queryClient = useQueryClient();
   
-  const { data: user, isLoading: isUserLoading, refetch } = useGetMe({
+  const { data: user, isLoading: isUserLoading } = useGetMe({
     query: {
       enabled: !!token,
       retry: false,
@@ -56,6 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      queryClient.removeQueries({ queryKey: getGetMeQueryKey(), exact: true });
       setToken(null);
     }
   };
@@ -64,8 +67,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         user: user || null,
-        isAuthenticated: !!user,
-        isLoading: isUserLoading,
+        isAuthenticated: !!token && !!user,
+        isLoading: !!token ? isUserLoading : false,
         login,
         register,
         logout,

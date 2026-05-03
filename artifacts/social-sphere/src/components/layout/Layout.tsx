@@ -22,7 +22,7 @@ interface LayoutProps {
 
 export default function Layout({ children, rightSlot }: LayoutProps) {
   const { user, logout } = useAuth();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   
   // Use state for dark mode toggle simply
   const [isDark, setIsDark] = React.useState(true);
