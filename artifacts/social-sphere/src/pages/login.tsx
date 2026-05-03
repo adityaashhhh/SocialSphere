@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Globe, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
@@ -19,7 +19,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await login({ email: identifier, password } as any);
+      await login({ email, password });
       setLocation("/");
     } catch (error: any) {
       toast({
@@ -49,9 +49,9 @@ export default function LoginPage() {
             <div className="space-y-1">
               <Input
                 type="text"
-                placeholder="username/email"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="h-12 bg-background/50"
               />
