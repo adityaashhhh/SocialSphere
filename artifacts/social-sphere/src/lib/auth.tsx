@@ -13,7 +13,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-setAuthTokenGetter(() => localStorage.getItem("accessToken"));
+setAuthTokenGetter(() => {
+  if (typeof localStorage === "undefined") return null;
+  return localStorage.getItem("accessToken");
+});
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem("accessToken"));

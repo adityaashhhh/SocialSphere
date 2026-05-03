@@ -139,16 +139,15 @@ export default function MessagesPage() {
   const handleSend = () => {
     if (!messageText.trim() || !selectedConvId || !activeRecipient) return;
     const text = messageText.trim();
-    setMessageText("");
     sendMessage.mutate(
       { data: { recipientId: activeRecipient.id, text } },
       {
         onSuccess: () => {
+          setMessageText("");
           queryClient.invalidateQueries({ queryKey: getGetConversationsQueryKey() });
           queryClient.invalidateQueries({ queryKey: getGetConversationMessagesQueryKey(selectedConvId) });
         },
         onError: () => {
-          setMessageText(text);
           toast({ title: "Failed to send message", variant: "destructive" });
         },
       },
@@ -342,6 +341,7 @@ export default function MessagesPage() {
                 }}
                 data-testid="message-input"
                 autoComplete="off"
+                rows={1}
               />
               <Button
                 size="icon"
