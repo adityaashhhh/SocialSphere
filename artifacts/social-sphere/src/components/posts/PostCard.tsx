@@ -113,7 +113,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
   };
 
   const handleShare = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+    navigator.clipboard.writeText(`${window.location.origin}/profile/${post.author.id}`);
     toast({ title: "Link copied to clipboard" });
   };
 

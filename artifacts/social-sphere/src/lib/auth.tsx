@@ -56,6 +56,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await logoutMutation.mutateAsync();
     } finally {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       setToken(null);
     }
   };

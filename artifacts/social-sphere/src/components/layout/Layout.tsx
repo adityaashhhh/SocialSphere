@@ -85,7 +85,7 @@ export default function Layout({ children, rightSlot }: LayoutProps) {
                 <p className="font-semibold truncate">{user.displayName || user.username}</p>
                 <p className="text-sm text-muted-foreground truncate">@{user.username}</p>
               </div>
-              <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 hidden md:flex absolute right-0" onClick={() => logout()}>
+              <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 hidden md:flex absolute right-0 z-10" onClick={logout}>
                 <LogOut className="w-5 h-5 text-destructive" />
               </Button>
             </div>

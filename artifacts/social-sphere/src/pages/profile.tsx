@@ -14,6 +14,7 @@ import {
   getGetFeedQueryKey,
   getGetFollowersQueryKey,
   getGetFollowingQueryKey,
+  getGetMeQueryKey,
   Post,
   UserSummary,
 } from "@workspace/api-client-react";
@@ -112,6 +113,9 @@ function EditProfileDialog({
         onSuccess: () => {
           toast({ title: "Profile updated!" });
           queryClient.invalidateQueries({ queryKey: getGetUserProfileQueryKey(userId) });
+          queryClient.invalidateQueries({ queryKey: getGetUserPostsQueryKey(userId) });
+          queryClient.invalidateQueries({ queryKey: getGetFeedQueryKey() });
+          queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
           onClose();
         },
         onError: () => toast({ title: "Failed to update profile", variant: "destructive" }),
@@ -213,6 +217,8 @@ export default function ProfilePage() {
     );
   };
 
+  const profileImage = profile?.profilePicture ?? currentUser?.profilePicture ?? undefined;
+
   if (!userId) return null;
 
   return (
@@ -238,7 +244,7 @@ export default function ProfilePage() {
           <div className="px-4 pb-4">
             <div className="flex items-end justify-between -mt-10 mb-4">
               <Avatar className="w-20 h-20 border-4 border-background">
-                <AvatarImage src={profile.profilePicture ?? undefined} />
+                <AvatarImage src={profileImage} />
                 <AvatarFallback className="text-2xl bg-primary/20 text-primary font-bold">
                   {(profile.displayName?.[0] ?? profile.username[0]).toUpperCase()}
                 </AvatarFallback>
