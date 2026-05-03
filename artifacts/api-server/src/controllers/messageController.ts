@@ -11,6 +11,8 @@ import {
 import { eq, and, inArray, desc, count } from "drizzle-orm";
 import { generateId } from "../lib/id.js";
 import { AuthRequest } from "../middlewares/auth.js";
+import { emitToConversation, emitNotification } from "../socket/socketHandler.js";
+import { io } from "../index.js";
 
 async function formatUser(userId: string) {
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
@@ -198,6 +200,8 @@ export async function sendMessage(req: Request, res: Response): Promise<void> {
   await db.insert(messageReadByTable).values({ messageId: msgId, userId });
 
   const formatted = await formatMessage(message);
+  emitToConversation(io, conversationId, "newMessage", { conversationId, message: formatted });
+  emitNotification(io, recipientId);
   res.status(201).json(formatted);
 }
 

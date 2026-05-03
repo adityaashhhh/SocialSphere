@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Heart, MessageCircle, Share2, MoreHorizontal, Pencil, Trash2, X, Check } from "lucide-react";
+import { Heart, MessageCircle, Share2, MoreHorizontal, Pencil, Trash2, X, Check, Users, Link2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -32,9 +32,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { timeAgo } from "@/lib/time";
 import CommentSection from "./CommentSection";
+import { Input } from "@/components/ui/input";
 
 interface PostCardProps {
   post: Post;
@@ -52,6 +59,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const [heartAnim, setHeartAnim] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
 
   const toggleLike = useTogglePostLike();
   const deletePost = useDeletePost();
@@ -115,8 +123,13 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
   };
 
   const handleShare = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/profile/${post.author.id}`);
+    setShowShareDialog(true);
+  };
+
+  const copyLink = async () => {
+    await navigator.clipboard.writeText(`${window.location.origin}/profile/${post.author.id}`);
     toast({ title: "Link copied to clipboard" });
+    setShowShareDialog(false);
   };
 
   const isOwn = user?.id === post.author.id;
@@ -227,11 +240,7 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
               <span className="text-sm tabular-nums">{post.commentsCount}</span>
             </button>
 
-            <button
-              data-testid="share-button"
-              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-              onClick={handleShare}
-            >
+            <button data-testid="share-button" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors" onClick={handleShare}>
               <Share2 className="w-5 h-5" />
             </button>
           </div>
@@ -272,6 +281,26 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share post</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Button className="w-full justify-start gap-2" onClick={() => toast({ title: "Shared to followers" })}>
+              <Users className="w-4 h-4" />
+              Share to followers
+            </Button>
+            <div className="flex gap-2">
+              <Input readOnly value={`${window.location.origin}/profile/${post.author.id}`} />
+              <Button variant="outline" onClick={copyLink} className="gap-2">
+                <Link2 className="w-4 h-4" />
+                Copy link
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </article>
   );
 }

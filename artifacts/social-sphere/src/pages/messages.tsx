@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Send, ArrowLeft } from "lucide-react";
+import { CheckCheck, Check, MessageCircle, Send, ArrowLeft } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetConversations,
@@ -135,6 +135,14 @@ export default function MessagesPage() {
         },
       },
     );
+  };
+
+  const getMessageStatus = (msg: Message) => {
+    if (!user || msg.sender.id !== user.id) return null;
+    const readCount = msg.readBy?.length ?? 0;
+    const delivered = readCount > 0;
+    const read = readCount > 1;
+    return read ? <CheckCheck className="w-3.5 h-3.5 text-sky-500" /> : delivered ? <Check className="w-3.5 h-3.5 text-muted-foreground" /> : null;
   };
 
   const handleSelectConv = (convId: string) => {
@@ -282,9 +290,10 @@ export default function MessagesPage() {
                       )}
                       <div className={cn("max-w-xs rounded-2xl px-4 py-2", isOwn ? "bg-primary text-primary-foreground" : "bg-muted")}>
                         <p className="text-sm break-words">{msg.text}</p>
-                        <p className={cn("text-xs mt-0.5", isOwn ? "text-primary-foreground/70" : "text-muted-foreground")}>
-                          {timeAgo(msg.createdAt)}
-                        </p>
+                        <div className={cn("mt-0.5 flex items-center gap-1", isOwn ? "justify-end text-primary-foreground/70" : "text-muted-foreground")}>
+                          <p className="text-xs">{timeAgo(msg.createdAt)}</p>
+                          {getMessageStatus(msg)}
+                        </div>
                       </div>
                     </div>
                   );

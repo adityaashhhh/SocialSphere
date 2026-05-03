@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const res = await loginMutation.mutateAsync({ data });
     setToken(res.accessToken);
     localStorage.setItem("refreshToken", res.refreshToken);
+    queryClient.clear();
     queryClient.setQueryData(getGetMeQueryKey(), res.user);
     queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
   };
@@ -52,6 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const res = await registerMutation.mutateAsync({ data });
     setToken(res.accessToken);
     localStorage.setItem("refreshToken", res.refreshToken);
+    queryClient.clear();
     queryClient.setQueryData(getGetMeQueryKey(), res.user);
     queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
   };

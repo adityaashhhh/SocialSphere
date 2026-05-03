@@ -9,6 +9,7 @@ import {
   useToggleCommentLike,
   useReplyToComment,
   getGetCommentsQueryKey,
+  getGetFeedQueryKey,
 } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
@@ -177,6 +178,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
         onSuccess: () => {
           setText("");
           queryClient.invalidateQueries({ queryKey: getGetCommentsQueryKey(postId) });
+          queryClient.invalidateQueries({ queryKey: getGetFeedQueryKey() });
         },
         onError: () => toast({ title: "Failed to post comment", variant: "destructive" }),
       },

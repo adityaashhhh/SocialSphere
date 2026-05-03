@@ -3,6 +3,8 @@ import { db } from "@workspace/db";
 import { notificationsTable, usersTable, followsTable } from "@workspace/db";
 import { eq, count, desc } from "drizzle-orm";
 import { AuthRequest } from "../middlewares/auth.js";
+import { emitNotification } from "../socket/socketHandler.js";
+import { io } from "../index.js";
 
 async function formatNotification(n: typeof notificationsTable.$inferSelect) {
   const [sender] = await db
@@ -61,6 +63,7 @@ export async function markNotificationRead(req: Request, res: Response): Promise
       eq(notificationsTable.id, notificationId),
     );
 
+  emitNotification(io, userId);
   res.json({ message: "Notification marked as read" });
 }
 
@@ -72,6 +75,7 @@ export async function markAllNotificationsRead(req: Request, res: Response): Pro
     .set({ read: true })
     .where(eq(notificationsTable.recipientId, userId));
 
+  emitNotification(io, userId);
   res.json({ message: "All notifications marked as read" });
 }
 
@@ -83,5 +87,6 @@ export async function deleteNotification(req: Request, res: Response): Promise<v
     .delete(notificationsTable)
     .where(eq(notificationsTable.id, notificationId));
 
+  emitNotification(io, userId);
   res.json({ message: "Notification deleted" });
 }

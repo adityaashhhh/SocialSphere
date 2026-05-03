@@ -10,7 +10,7 @@ import {
 import { eq, and, isNull, sql } from "drizzle-orm";
 import { generateId } from "../lib/id.js";
 import { AuthRequest } from "../middlewares/auth.js";
-import { emitNotification } from "../socket/socketHandler.js";
+import { emitNotification, emitToPost } from "../socket/socketHandler.js";
 import { io } from "../index.js";
 
 type FormattedComment = {
@@ -155,6 +155,7 @@ export async function createComment(req: Request, res: Response): Promise<void> 
   }
 
   const formatted = await formatComment(comment, userId);
+  emitToPost(io, postId, "newComment", { postId, comment: formatted });
   res.status(201).json(formatted);
 }
 
@@ -307,5 +308,6 @@ export async function replyToComment(req: Request, res: Response): Promise<void>
     .returning();
 
   const formatted = await formatComment(reply, userId, false);
+  emitToPost(io, parent.postId, "newComment", { postId: parent.postId });
   res.status(201).json(formatted);
 }

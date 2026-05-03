@@ -51,6 +51,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
     newSocket.on('newComment', () => {
       queryClient.invalidateQueries({ queryKey: ['/api/comments'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'], exact: false });
     });
 
     newSocket.on('newMessage', () => {
