@@ -17,7 +17,6 @@ import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { timeAgo } from "@/lib/time";
@@ -61,7 +60,6 @@ export default function MessagesPage() {
   const [selectedConvId, setSelectedConvId] = useState<string | null>(null);
   const [messageText, setMessageText] = useState("");
   const [showConvList, setShowConvList] = useState(true);
-  const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const sharedPostId = new URLSearchParams(location.split("?")[1] ?? "").get("share");
 
@@ -164,7 +162,6 @@ export default function MessagesPage() {
 
   const handleSelectConv = (personId: string) => {
     setSelectedConvId(personId);
-    setSelectedRecipientId(personId);
     setShowConvList(false);
   };
 

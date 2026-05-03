@@ -192,7 +192,6 @@ export default function ProfilePage() {
       enabled: !!userId,
     },
   });
-
   const toggleFollowMutation = useToggleFollow();
   const posts = (postsData as any)?.posts as Post[] | undefined;
   const likedPosts = (posts ?? []).filter((post) => post.isLiked);
