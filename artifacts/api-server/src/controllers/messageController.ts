@@ -174,11 +174,14 @@ export async function sendMessage(req: Request, res: Response): Promise<void> {
   } else {
     conversationId = generateId();
     await db.insert(conversationsTable).values({ id: conversationId });
-    await db.insert(conversationParticipantsTable).values([
+  }
+  await db
+    .insert(conversationParticipantsTable)
+    .values([
       { conversationId, userId },
       { conversationId, userId: recipientId },
-    ]);
-  }
+    ])
+    .onConflictDoNothing();
 
   const msgId = generateId();
   const [message] = await db

@@ -140,7 +140,7 @@ export default function MessagesPage() {
     const text = messageText;
     setMessageText("");
     sendMessage.mutate(
-      { data: { recipientId: activeRecipient.id, text } },
+      { recipientId: activeRecipient.id, text } as any,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetConversationsQueryKey() });
