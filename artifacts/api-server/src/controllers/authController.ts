@@ -64,17 +64,18 @@ export async function register(req: Request, res: Response): Promise<void> {
 }
 
 export async function login(req: Request, res: Response): Promise<void> {
-  const { email, password } = req.body as { email: string; password: string };
+  const { email, username, password } = req.body as { email?: string; username?: string; password: string };
+  const identifier = email ?? username;
 
-  if (!email || !password) {
-    res.status(400).json({ error: "Bad Request", message: "email and password are required" });
+  if (!identifier || !password) {
+    res.status(400).json({ error: "Bad Request", message: "username or email and password are required" });
     return;
   }
 
   const [user] = await db
     .select()
     .from(usersTable)
-    .where(eq(usersTable.email, email))
+    .where(email ? eq(usersTable.email, email) : eq(usersTable.username, username!))
     .limit(1);
 
   if (!user) {
