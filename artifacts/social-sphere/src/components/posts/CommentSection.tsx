@@ -68,7 +68,7 @@ function CommentItem({ comment, postId, depth = 0 }: CommentItemProps) {
   const handleReply = () => {
     if (!replyText.trim()) return;
     replyToComment.mutate(
-      { commentId: comment.id, data: { text: replyText } },
+      { data: { commentId: comment.id, text: replyText } } as any,
       {
         onSuccess: () => {
           setReplyText("");
@@ -173,7 +173,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const handleSubmit = () => {
     if (!text.trim() || !user) return;
     createComment.mutate(
-      { postId, data: { text } },
+      { data: { postId, text } } as any,
       {
         onSuccess: () => {
           setText("");
