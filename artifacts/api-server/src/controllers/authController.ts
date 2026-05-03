@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { db } from "@workspace/db";
 import { usersTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { generateTokens, verifyRefreshToken } from "../lib/jwt.js";
 import { generateId } from "../lib/id.js";
 
@@ -66,16 +66,17 @@ export async function register(req: Request, res: Response): Promise<void> {
 export async function login(req: Request, res: Response): Promise<void> {
   const { email, username, password } = req.body as { email?: string; username?: string; password: string };
   const identifier = email ?? username;
+  const normalizedIdentifier = identifier?.trim();
 
-  if (!identifier || !password) {
-    res.status(400).json({ error: "Bad Request", message: "username or email and password are required" });
+  if (!normalizedIdentifier || !password) {
+    res.status(400).json({ error: "Bad Request", message: "username/email and password are required" });
     return;
   }
 
   const [user] = await db
     .select()
     .from(usersTable)
-    .where(email ? eq(usersTable.email, email) : eq(usersTable.username, username!))
+    .where(or(eq(usersTable.email, normalizedIdentifier), eq(usersTable.username, normalizedIdentifier)))
     .limit(1);
 
   if (!user) {

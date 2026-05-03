@@ -19,7 +19,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await login({ email: identifier, password });
+      await login({ email: identifier, password } as any);
       setLocation("/");
     } catch (error: any) {
       toast({
@@ -49,7 +49,7 @@ export default function LoginPage() {
             <div className="space-y-1">
               <Input
                 type="text"
-                placeholder="Username or email"
+                placeholder="username/email"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
