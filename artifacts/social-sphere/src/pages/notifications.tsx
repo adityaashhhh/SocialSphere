@@ -57,9 +57,9 @@ const notificationIcon = {
 const notificationText = (type: NotificationType, actor: string) => {
   switch (type) {
     case "like":
-      return `${actor} liked your post`;
+      return `${actor} liked ur post`;
     case "comment":
-      return `${actor} commented on your post`;
+      return `${actor} commented on ur post`;
     case "follow":
       return `${actor} started following you`;
     case "mention":
@@ -190,15 +190,11 @@ export default function NotificationsPage() {
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm">
-                  {n.actor ? (
-                    <Link href={`/profile/${n.actor.id}`}>
-                      <span className="font-semibold hover:underline cursor-pointer">
-                        {notificationText(n.type, actorLabel(n))}
-                      </span>
-                    </Link>
-                  ) : (
-                    <span className="font-semibold">Someone</span>
-                  )}{" "}
+                  <Link href={`/profile/${n.actor?.id ?? n.sender?.id ?? ""}`}>
+                    <span className="font-semibold hover:underline cursor-pointer">
+                      {notificationText(n.type, actorLabel(n))}
+                    </span>
+                  </Link>{" "}
                   {notificationContext(n) && (
                     <>
                       {" "}
