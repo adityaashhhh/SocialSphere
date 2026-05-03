@@ -11,11 +11,31 @@ import { eq, and, isNull, sql } from "drizzle-orm";
 import { generateId } from "../lib/id.js";
 import { AuthRequest } from "../middlewares/auth.js";
 
+type FormattedComment = {
+  id: string;
+  text: string;
+  author: {
+    id: string;
+    username: string;
+    displayName: string;
+    profilePicture: string | null;
+    bio: string | null;
+    isFollowing: boolean;
+    followersCount: number;
+  };
+  postId: string;
+  parentCommentId: string | null;
+  likesCount: number;
+  isLiked: boolean;
+  replies: FormattedComment[];
+  createdAt: string;
+};
+
 async function formatComment(
   comment: typeof commentsTable.$inferSelect,
   viewerId: string | undefined,
   includeReplies = true,
-) {
+): Promise<FormattedComment> {
   const [author] = await db
     .select()
     .from(usersTable)
@@ -38,7 +58,7 @@ async function formatComment(
     isLiked = like.length > 0;
   }
 
-  let replies: ReturnType<typeof formatComment> extends Promise<infer T> ? T[] : never[] = [];
+  let replies: FormattedComment[] = [];
   if (includeReplies) {
     const replyRows = await db
       .select()
@@ -79,6 +99,18 @@ export async function getComments(req: Request, res: Response): Promise<void> {
 
   const formatted = await Promise.all(topLevel.map((c) => formatComment(c, viewerId)));
   res.json(formatted);
+}
+
+async function rebuildPostCommentCount(postId: string) {
+  const [row] = await db
+    .select({ cnt: sql<number>`count(*)` })
+    .from(commentsTable)
+    .where(eq(commentsTable.postId, postId));
+
+  await db
+    .update(postsTable)
+    .set({ commentsCount: Number(row?.cnt ?? 0) })
+    .where(eq(postsTable.id, postId));
 }
 
 export async function createComment(req: Request, res: Response): Promise<void> {
@@ -174,10 +206,7 @@ export async function deleteComment(req: Request, res: Response): Promise<void> 
   }
 
   await db.delete(commentsTable).where(eq(commentsTable.id, commentId));
-  await db
-    .update(postsTable)
-    .set({ commentsCount: sql`${postsTable.commentsCount} - 1` })
-    .where(eq(postsTable.id, comment.postId));
+  await rebuildPostCommentCount(comment.postId);
 
   res.json({ message: "Comment deleted" });
 }

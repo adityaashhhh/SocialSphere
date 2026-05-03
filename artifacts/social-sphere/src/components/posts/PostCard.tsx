@@ -61,6 +61,8 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
     queryClient.invalidateQueries({ queryKey: getGetFeedQueryKey() });
     queryClient.invalidateQueries({ queryKey: getGetExplorePostsQueryKey() });
     queryClient.invalidateQueries({ queryKey: getGetUserPostsQueryKey(post.author.id) });
+    queryClient.invalidateQueries({ queryKey: ["getPost", post.id] });
+    queryClient.invalidateQueries({ queryKey: getGetFeedQueryKey(), exact: false });
   };
 
   const handleLike = () => {

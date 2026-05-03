@@ -58,7 +58,6 @@ function CommentItem({ comment, postId, depth = 0 }: CommentItemProps) {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetCommentsQueryKey(postId) });
-          queryClient.invalidateQueries({ queryKey: getGetFeedQueryKey() } as any);
           toast({ title: "Comment deleted" });
         },
       },
@@ -178,7 +177,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
         onSuccess: () => {
           setText("");
           queryClient.invalidateQueries({ queryKey: getGetCommentsQueryKey(postId) });
-          queryClient.invalidateQueries({ queryKey: getGetFeedQueryKey() } as any);
         },
         onError: () => toast({ title: "Failed to post comment", variant: "destructive" }),
       },
