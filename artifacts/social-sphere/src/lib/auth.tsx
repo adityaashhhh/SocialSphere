@@ -43,7 +43,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [token]);
 
   const login = async (data: LoginBody) => {
-    const res = await loginMutation.mutateAsync({ data });
+    const res = await loginMutation.mutateAsync({
+      data: {
+        email: (data as LoginBody & { username?: string }).email ?? (data as LoginBody & { username?: string }).username ?? "",
+        password: data.password,
+      } as LoginBody,
+    });
     setToken(res.accessToken);
     localStorage.setItem("refreshToken", res.refreshToken);
     queryClient.clear();
