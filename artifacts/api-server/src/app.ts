@@ -25,7 +25,8 @@ app.use(
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 1000,
+  skipSuccessfulRequests: true,
   message: { error: "Too many requests", message: "Rate limit exceeded" },
   standardHeaders: true,
   legacyHeaders: false,

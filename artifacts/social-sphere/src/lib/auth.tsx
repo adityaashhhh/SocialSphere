@@ -42,14 +42,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const res = await loginMutation.mutateAsync({ data });
     setToken(res.accessToken);
     localStorage.setItem("refreshToken", res.refreshToken);
-    await refetch();
   };
 
   const register = async (data: RegisterBody) => {
     const res = await registerMutation.mutateAsync({ data });
     setToken(res.accessToken);
     localStorage.setItem("refreshToken", res.refreshToken);
-    await refetch();
   };
 
   const logout = async () => {
