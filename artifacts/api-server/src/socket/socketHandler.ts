@@ -99,6 +99,10 @@ export function emitToConversation(
   io.to(`conv:${conversationId}`).emit(event, data);
 }
 
+export function emitNotification(io: SocketIOServer, userId: string): void {
+  io.to(`user:${userId}`).emit("notificationCount");
+}
+
 export function getOnlineUsers(): string[] {
   return Array.from(onlineUsers.keys());
 }

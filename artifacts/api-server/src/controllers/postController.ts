@@ -11,6 +11,8 @@ import {
 import { eq, and, inArray, desc, count, sql } from "drizzle-orm";
 import { generateId } from "../lib/id.js";
 import { AuthRequest } from "../middlewares/auth.js";
+import { emitNotification } from "../socket/socketHandler.js";
+import { io } from "../index.js";
 
 async function formatPost(
   post: typeof postsTable.$inferSelect,
@@ -297,6 +299,7 @@ export async function togglePostLike(req: Request, res: Response): Promise<void>
         type: "like",
         postId,
       });
+      emitNotification(io, post.authorId);
     }
   }
 

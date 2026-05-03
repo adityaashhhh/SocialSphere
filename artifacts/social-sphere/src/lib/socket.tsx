@@ -55,6 +55,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     
     newSocket.on('notificationCount', () => {
       queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
     });
 
     setSocket(newSocket);

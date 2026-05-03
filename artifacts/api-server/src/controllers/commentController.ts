@@ -10,6 +10,8 @@ import {
 import { eq, and, isNull, sql } from "drizzle-orm";
 import { generateId } from "../lib/id.js";
 import { AuthRequest } from "../middlewares/auth.js";
+import { emitNotification } from "../socket/socketHandler.js";
+import { io } from "../index.js";
 
 type FormattedComment = {
   id: string;
@@ -149,6 +151,7 @@ export async function createComment(req: Request, res: Response): Promise<void> 
       type: "comment",
       postId,
     });
+    emitNotification(io, post.authorId);
   }
 
   const formatted = await formatComment(comment, userId);
