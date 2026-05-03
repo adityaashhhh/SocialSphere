@@ -27,7 +27,7 @@ export default function UserSuggestionCard({ user }: UserSuggestionCardProps) {
     const newFollowing = !isFollowing;
     setIsFollowing(newFollowing);
     toggleFollow.mutate(
-      { data: { userId: user.id } } as any,
+      { userId: user.id } as any,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetSuggestedUsersQueryKey() });
