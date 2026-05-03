@@ -43,10 +43,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [token]);
 
   const login = async (data: LoginBody) => {
+    const loginData = data as LoginBody & { username?: string };
     const res = await loginMutation.mutateAsync({
       data: {
-        email: (data as LoginBody & { username?: string }).email ?? (data as LoginBody & { username?: string }).username ?? "",
-        password: data.password,
+        email: loginData.email ?? loginData.username ?? "",
+        username: loginData.username ?? loginData.email ?? "",
+        password: loginData.password,
       } as LoginBody,
     });
     setToken(res.accessToken);
