@@ -11,7 +11,12 @@ interface SocketContextType {
 const SocketContext = createContext<SocketContextType>({ socket: null, isConnected: false });
 
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated } = useAuth();
+  let isAuthenticated = false;
+  try {
+    isAuthenticated = useAuth().isAuthenticated;
+  } catch {
+    isAuthenticated = false;
+  }
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const queryClient = useQueryClient();
@@ -56,6 +61,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     newSocket.on('notificationCount', () => {
       queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
       queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts/feed'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts/explore'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'], exact: false });
     });
 
     setSocket(newSocket);

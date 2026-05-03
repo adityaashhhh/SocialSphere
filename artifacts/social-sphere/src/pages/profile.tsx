@@ -195,6 +195,7 @@ export default function ProfilePage() {
 
   const toggleFollowMutation = useToggleFollow();
   const posts = (postsData as any)?.posts as Post[] | undefined;
+  const likedPosts = (posts ?? []).filter((post) => post.isLiked);
   const isOwnProfile = currentUser?.id === userId;
   const effectiveFollowing = isFollowing ?? profile?.isFollowing ?? false;
 
@@ -347,10 +348,18 @@ export default function ProfilePage() {
             </TabsContent>
 
             <TabsContent value="liked" className="mt-0">
-              <div className="flex flex-col items-center py-16 text-center px-4">
-                <Heart className="w-10 h-10 text-muted-foreground mb-3" />
-                <p className="text-muted-foreground">Liked posts coming soon</p>
-              </div>
+              {postsLoading ? (
+                <div className="p-4 space-y-4">
+                  {[1, 2].map((i) => <Skeleton key={i} className="h-32 w-full" />)}
+                </div>
+              ) : likedPosts.length > 0 ? (
+                likedPosts.map((post) => <PostCard key={post.id} post={post} />)
+              ) : (
+                <div className="flex flex-col items-center py-16 text-center px-4">
+                  <Heart className="w-10 h-10 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">No liked posts yet</p>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
 

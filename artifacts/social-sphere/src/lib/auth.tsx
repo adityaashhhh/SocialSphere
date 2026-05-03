@@ -44,12 +44,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const res = await loginMutation.mutateAsync({ data });
     setToken(res.accessToken);
     localStorage.setItem("refreshToken", res.refreshToken);
+    queryClient.setQueryData(getGetMeQueryKey(), res.user);
+    queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
   };
 
   const register = async (data: RegisterBody) => {
     const res = await registerMutation.mutateAsync({ data });
     setToken(res.accessToken);
     localStorage.setItem("refreshToken", res.refreshToken);
+    queryClient.setQueryData(getGetMeQueryKey(), res.user);
+    queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
   };
 
   const logout = async () => {

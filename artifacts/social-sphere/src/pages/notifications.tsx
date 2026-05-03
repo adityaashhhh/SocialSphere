@@ -81,6 +81,11 @@ export default function NotificationsPage() {
     });
   };
 
+  const handleOpenPost = (postId?: string) => {
+    if (!postId) return;
+    window.location.href = `/post/${postId}`;
+  };
+
   const handleDelete = (id: string) => {
     deleteNotification.mutate({ notificationId: id }, {
       onSuccess: () => {
@@ -169,7 +174,15 @@ export default function NotificationsPage() {
                     <>
                       {" "}
                       <span className="text-muted-foreground">· </span>
-                      <span className="text-muted-foreground text-xs">view post</span>
+                      <button
+                        className="text-muted-foreground text-xs hover:underline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenPost(n.postId);
+                        }}
+                      >
+                        view post
+                      </button>
                     </>
                   )}
                 </p>
