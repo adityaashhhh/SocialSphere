@@ -4,14 +4,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { SocketProvider } from "@/lib/socket";
-import NotFound from "@/pages/not-found";
-import LoginPage from "@/pages/login";
-import RegisterPage from "@/pages/register";
-import FeedPage from "@/pages/feed";
-import ProfilePage from "@/pages/profile";
-import ExplorePage from "@/pages/explore";
-import NotificationsPage from "@/pages/notifications";
-import MessagesPage from "@/pages/messages";
+import NotFound from "./pages/not-found";
+import LoginPage from "./pages/login";
+import RegisterPage from "./pages/register";
+import FeedPage from "./pages/feed";
+import ProfilePage from "./pages/profile";
+import ExplorePage from "./pages/explore";
+import NotificationsPage from "./pages/notifications";
+import MessagesPage from "./pages/messages";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient({
@@ -49,12 +49,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <SocketProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <SocketProvider>
               <Router />
-            </WouterRouter>
+            </SocketProvider>
             <Toaster />
-          </SocketProvider>
+          </WouterRouter>
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>

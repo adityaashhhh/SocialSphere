@@ -162,9 +162,10 @@ export default function MessagesPage() {
     return read ? <CheckCheck className="w-3.5 h-3.5 text-sky-500" /> : delivered ? <Check className="w-3.5 h-3.5 text-muted-foreground" /> : null;
   };
 
-  const handleSelectConv = (convId: string) => {
-    setSelectedConvId(convId);
+  const handleSelectConv = (personId: string) => {
+    setSelectedConvId(personId);
     setShowConvList(false);
+    setMessageText("");
   };
 
   const ConversationList = () => (
@@ -261,7 +262,7 @@ export default function MessagesPage() {
 
   const ChatPanel = () => (
     <div className={cn("flex flex-col flex-1 h-full", !showConvList || selectedConvId ? "flex" : "hidden md:flex")}>
-      {selectedConvId && otherParticipant ? (
+      {selectedConvId && activeRecipient ? (
         <>
           <div className="flex items-center gap-3 p-4 border-b border-border">
             <Button
@@ -273,14 +274,14 @@ export default function MessagesPage() {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <Avatar className="w-9 h-9">
-              <AvatarImage src={otherParticipant.profilePicture ?? undefined} />
+              <AvatarImage src={activeRecipient.profilePicture ?? undefined} />
               <AvatarFallback className="bg-accent/20 text-accent font-semibold">
-                {(otherParticipant.displayName?.[0] ?? "?").toUpperCase()}
+                {(activeRecipient.displayName?.[0] ?? "?").toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-semibold text-sm">{otherParticipant.displayName}</p>
-              <p className="text-xs text-muted-foreground">@{otherParticipant.username}</p>
+              <p className="font-semibold text-sm">{activeRecipient.displayName}</p>
+              <p className="text-xs text-muted-foreground">@{activeRecipient.username}</p>
             </div>
           </div>
 

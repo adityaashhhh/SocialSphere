@@ -44,6 +44,12 @@ async function formatNotification(n: typeof notificationsTable.$inferSelect) {
       isFollowing: false,
       followersCount: Number(followRow?.cnt ?? 0),
     },
+    actor: {
+      id: sender?.id ?? n.senderId,
+      username: sender?.username ?? "",
+      displayName: sender?.displayName ?? "",
+      profilePicture: sender?.profilePicture ?? null,
+    },
     postId: n.postId ?? null,
     post: post
       ? {

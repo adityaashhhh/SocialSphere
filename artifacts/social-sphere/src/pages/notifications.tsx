@@ -27,6 +27,12 @@ interface Notification {
     displayName: string;
     profilePicture?: string | null;
   };
+  actor?: {
+    id: string;
+    username: string;
+    displayName: string;
+    profilePicture?: string | null;
+  };
   postId?: string;
   post?: {
     id: string;
@@ -177,10 +183,10 @@ export default function NotificationsPage() {
 
               <div className="flex-1 min-w-0">
                 <p className="text-sm">
-                  {n.sender ? (
-                    <Link href={`/profile/${n.sender.id}`}>
+                {n.actor ? (
+                    <Link href={`/profile/${n.actor.id}`}>
                       <span className="font-semibold hover:underline cursor-pointer">
-                        {n.sender.displayName}
+                        {n.actor.displayName}
                       </span>
                     </Link>
                   ) : (
