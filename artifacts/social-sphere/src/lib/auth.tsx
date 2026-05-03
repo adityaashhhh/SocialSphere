@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await logoutMutation.mutateAsync();
     } finally {
+      queryClient.clear();
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       queryClient.removeQueries({ queryKey: getGetMeQueryKey(), exact: true });

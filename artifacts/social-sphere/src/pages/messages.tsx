@@ -95,6 +95,10 @@ export default function MessagesPage() {
     acc.push(person);
     return acc;
   }, []);
+  const activeRecipient =
+    conversations?.find((conv) => conv.id === selectedConvId)?.participants.find((p) => p.id !== user?.id) ??
+    visiblePeople.find((person) => person.id === selectedConvId) ??
+    null;
 
   const selectedConv = conversations?.find((c) => c.id === selectedConvId);
   const otherParticipant = selectedConv?.participants.find((p) => p.id !== user?.id);
@@ -132,11 +136,11 @@ export default function MessagesPage() {
   }, [messages]);
 
   const handleSend = () => {
-    if (!messageText.trim() || !selectedConvId) return;
+    if (!messageText.trim() || !selectedConvId || !activeRecipient) return;
     const text = messageText;
     setMessageText("");
     sendMessage.mutate(
-      { data: { recipientId: otherParticipant?.id ?? "", text } },
+      { data: { recipientId: activeRecipient.id, text } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetConversationsQueryKey() });
