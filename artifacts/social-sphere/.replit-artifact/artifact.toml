@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "SocialSphere"
+version = "1.0.0"
+id = "artifacts/social-sphere"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20835
+
+[services.development]
+run = "pnpm --filter @workspace/social-sphere run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/social-sphere", "run", "build" ]
+publicDir = "artifacts/social-sphere/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20835"
+BASE_PATH = "/"
