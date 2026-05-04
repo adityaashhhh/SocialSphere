@@ -33,53 +33,67 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-primary/10 p-4">
-      <Card className="w-full max-w-md shadow-xl border-border/50 bg-card/80 backdrop-blur-sm">
-        <CardHeader className="space-y-3 text-center pb-6">
-          <div className="flex justify-center mb-2">
-            <div className="bg-primary/20 p-3 rounded-full">
-              <Globe className="w-10 h-10 text-primary" />
-            </div>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#020617]">
+      {/* Animated Background Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 rounded-full blur-[120px] animate-pulse delay-700" />
+      
+      <div className="w-full max-w-md relative z-10">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent shadow-xl shadow-primary/20 mb-4 animate-bounce-slow">
+            <Globe className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-3xl font-bold tracking-tight">Welcome back</CardTitle>
-          <CardDescription className="text-base">Sign in to your SocialSphere account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-1">
-              <Input
-                type="text"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="h-12 bg-background/50"
-              />
+          <h1 className="text-4xl font-black tracking-tighter text-white mb-2">SocialSphere</h1>
+          <p className="text-muted-foreground font-medium">Reconnect with your world.</p>
+        </div>
+
+        <Card className="border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl shadow-black/50 rounded-[2.5rem] overflow-hidden">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-2xl font-bold text-white text-center">Welcome Back</CardTitle>
+            <CardDescription className="text-center text-zinc-400">Enter your credentials to continue</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-2 pb-8 px-8">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Input
+                  type="text"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="h-14 bg-white/5 border-white/10 text-white placeholder:text-zinc-500 rounded-2xl focus:ring-primary/50 transition-all"
+                />
+              </div>
+              <div className="space-y-2">
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="h-14 bg-white/5 border-white/10 text-white placeholder:text-zinc-500 rounded-2xl focus:ring-primary/50 transition-all"
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full h-14 text-lg font-bold rounded-2xl bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all shadow-lg shadow-primary/25 active:scale-[0.98]" 
+                disabled={isLoading}
+              >
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : "Sign In"}
+              </Button>
+            </form>
+            
+            <div className="mt-8 text-center">
+              <p className="text-sm text-zinc-400">
+                New to the sphere?{" "}
+                <Link href="/register" className="text-primary font-bold hover:text-accent transition-colors">
+                  Create an account
+                </Link>
+              </p>
             </div>
-            <div className="space-y-1">
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="h-12 bg-background/50"
-              />
-            </div>
-            <Button type="submit" className="w-full h-12 text-lg font-medium" disabled={isLoading}>
-              {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-              Sign In
-            </Button>
-          </form>
-          
-          <div className="mt-8 text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link href="/register" className="text-primary font-medium hover:underline">
-              Create one
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

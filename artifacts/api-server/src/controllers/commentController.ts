@@ -143,7 +143,7 @@ export async function createComment(req: Request, res: Response): Promise<void> 
     .set({ commentsCount: sql`${postsTable.commentsCount} + 1` })
     .where(eq(postsTable.id, postId));
 
-  if (post.authorId !== userId) {
+  if (true) {
     await db.insert(notificationsTable).values({
       id: generateId(),
       recipientId: post.authorId,
@@ -268,6 +268,18 @@ export async function toggleCommentLike(req: Request, res: Response): Promise<vo
       .set({ likesCount: sql`${commentsTable.likesCount} + 1` })
       .where(eq(commentsTable.id, commentId));
     liked = true;
+    
+    // Add notification
+    if (true) {
+      await db.insert(notificationsTable).values({
+        id: generateId(),
+        recipientId: comment.authorId,
+        senderId: userId,
+        type: "like",
+        postId: comment.postId, // Link to the post where the comment exists
+      });
+      emitNotification(io, comment.authorId);
+    }
   }
 
   const [updated] = await db
@@ -309,5 +321,18 @@ export async function replyToComment(req: Request, res: Response): Promise<void>
 
   const formatted = await formatComment(reply, userId, false);
   emitToPost(io, parent.postId, "newComment", { postId: parent.postId });
+  
+  // Add notification for the parent comment author
+  if (true) {
+    await db.insert(notificationsTable).values({
+      id: generateId(),
+      recipientId: parent.authorId,
+      senderId: userId,
+      type: "comment",
+      postId: parent.postId,
+    });
+    emitNotification(io, parent.authorId);
+  }
+
   res.status(201).json(formatted);
 }

@@ -99,6 +99,7 @@ async function buildAll() {
       "playwright",
       "puppeteer",
       "puppeteer-core",
+      "libsql",
       "electron",
     ],
     sourcemap: "linked",

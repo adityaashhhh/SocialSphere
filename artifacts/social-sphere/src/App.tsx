@@ -12,6 +12,7 @@ import ProfilePage from "./pages/profile";
 import ExplorePage from "./pages/explore";
 import NotificationsPage from "./pages/notifications";
 import MessagesPage from "./pages/messages";
+import PostPage from "./pages/post";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient({
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/explore" component={ExplorePage} />
       <Route path="/notifications" component={() => <ProtectedRoute component={NotificationsPage} />} />
       <Route path="/messages" component={() => <ProtectedRoute component={MessagesPage} />} />
+      <Route path="/post/:postId" component={() => <ProtectedRoute component={PostPage} />} />
       <Route component={NotFound} />
     </Switch>
   );

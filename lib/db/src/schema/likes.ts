@@ -1,26 +1,23 @@
 import {
-  pgTable,
+  sqliteTable,
   text,
-  timestamp,
+  integer,
   primaryKey,
-  pgEnum,
   index,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 import { usersTable } from "./users";
 
-export const likeTargetEnum = pgEnum("like_target", ["post", "comment"]);
-
-export const likesTable = pgTable(
+export const likesTable = sqliteTable(
   "likes",
   {
     userId: text("user_id")
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
     targetId: text("target_id").notNull(),
-    targetType: likeTargetEnum("target_type").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    targetType: text("target_type", { enum: ["post", "comment"] }).notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
+      .default(new Date()),
   },
   (t) => [
     primaryKey({ columns: [t.userId, t.targetId, t.targetType] }),

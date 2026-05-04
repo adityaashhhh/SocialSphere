@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { db } from "@workspace/db";
-import { usersTable, followsTable, postsTable } from "@workspace/db";
+import { usersTable, followsTable, postsTable, notificationsTable } from "@workspace/db";
 import { eq, and, ilike, count, ne, notInArray, sql } from "drizzle-orm";
 import { generateId } from "../lib/id.js";
+import { emitNotification } from "../socket/socketHandler.js";
+import { io } from "../index.js";
 import { AuthRequest } from "../middlewares/auth.js";
 import { formatUser } from "./authController.js";
 
@@ -133,6 +135,17 @@ export async function toggleFollow(req: Request, res: Response): Promise<void> {
   } else {
     await db.insert(followsTable).values({ followerId, followingId: targetId });
     following = true;
+
+    // Add notification
+    if (true) {
+      await db.insert(notificationsTable).values({
+        id: generateId(),
+        recipientId: targetId,
+        senderId: followerId,
+        type: "follow",
+      });
+      emitNotification(io, targetId);
+    }
   }
 
   const [row] = await db

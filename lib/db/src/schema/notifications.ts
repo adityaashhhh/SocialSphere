@@ -1,21 +1,12 @@
 import {
-  pgTable,
+  sqliteTable,
   text,
-  boolean,
-  timestamp,
-  pgEnum,
+  integer,
   index,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 import { usersTable } from "./users";
 
-export const notificationTypeEnum = pgEnum("notification_type", [
-  "like",
-  "comment",
-  "follow",
-  "mention",
-]);
-
-export const notificationsTable = pgTable(
+export const notificationsTable = sqliteTable(
   "notifications",
   {
     id: text("id").primaryKey(),
@@ -25,12 +16,12 @@ export const notificationsTable = pgTable(
     senderId: text("sender_id")
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
-    type: notificationTypeEnum("type").notNull(),
+    type: text("type", { enum: ["like", "comment", "follow", "mention"] }).notNull(),
     postId: text("post_id"),
-    read: boolean("read").notNull().default(false),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    read: integer("read", { mode: "boolean" }).notNull().default(false),
+    createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
+      .default(new Date()),
   },
   (t) => [
     index("notifications_recipient_idx").on(t.recipientId),

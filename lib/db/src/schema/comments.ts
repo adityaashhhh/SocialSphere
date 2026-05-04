@@ -1,14 +1,13 @@
 import {
-  pgTable,
+  sqliteTable,
   text,
   integer,
-  timestamp,
   index,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 import { usersTable } from "./users";
 import { postsTable } from "./posts";
 
-export const commentsTable = pgTable(
+export const commentsTable = sqliteTable(
   "comments",
   {
     id: text("id").primaryKey(),
@@ -21,9 +20,9 @@ export const commentsTable = pgTable(
     text: text("text").notNull(),
     parentCommentId: text("parent_comment_id"),
     likesCount: integer("likes_count").notNull().default(0),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
+      .default(new Date()),
   },
   (t) => [
     index("comments_post_idx").on(t.postId),

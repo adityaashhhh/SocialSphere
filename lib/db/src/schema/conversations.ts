@@ -1,21 +1,21 @@
 import {
-  pgTable,
+  sqliteTable,
   text,
-  timestamp,
+  integer,
   primaryKey,
   index,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 import { usersTable } from "./users";
 
-export const conversationsTable = pgTable("conversations", {
+export const conversationsTable = sqliteTable("conversations", {
   id: text("id").primaryKey(),
   lastMessageId: text("last_message_id"),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
+  updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
-    .defaultNow(),
+    .default(new Date()),
 });
 
-export const conversationParticipantsTable = pgTable(
+export const conversationParticipantsTable = sqliteTable(
   "conversation_participants",
   {
     conversationId: text("conversation_id")
@@ -32,7 +32,7 @@ export const conversationParticipantsTable = pgTable(
   ],
 );
 
-export const messagesTable = pgTable(
+export const messagesTable = sqliteTable(
   "messages",
   {
     id: text("id").primaryKey(),
@@ -44,9 +44,9 @@ export const messagesTable = pgTable(
       .references(() => usersTable.id, { onDelete: "cascade" }),
     text: text("text"),
     mediaUrl: text("media_url"),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
+      .default(new Date()),
   },
   (t) => [
     index("messages_conv_idx").on(t.conversationId),
@@ -55,7 +55,7 @@ export const messagesTable = pgTable(
   ],
 );
 
-export const messageReadByTable = pgTable(
+export const messageReadByTable = sqliteTable(
   "message_read_by",
   {
     messageId: text("message_id")

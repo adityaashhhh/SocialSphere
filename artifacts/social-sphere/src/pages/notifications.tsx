@@ -1,5 +1,5 @@
 import { Bell, Heart, MessageCircle, UserPlus, Trash2, CheckCheck } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetNotifications,
@@ -8,6 +8,7 @@ import {
   useDeleteNotification,
   getGetNotificationsQueryKey,
 } from "@workspace/api-client-react";
+import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -54,31 +55,33 @@ const notificationIcon = {
   mention: <Bell className="w-4 h-4 text-accent" />,
 };
 
-const notificationText = (type: NotificationType, actor: string) => {
-  switch (type) {
-    case "like":
-      return `${actor} liked ur post`;
-    case "comment":
-      return `${actor} commented on ur post`;
-    case "follow":
-      return `${actor} started following you`;
-    case "mention":
-      return `${actor} mentioned you`;
-    default:
-      return `${actor} interacted with you`;
-  }
-};
+const getNotificationText = (n: Notification, currentUserId?: string) => {
+  const actorName = n.actor?.displayName || n.actor?.username || "Someone";
+  const postAuthorName = n.post?.author?.displayName || n.post?.author?.username || "someone";
+  const isOwnPost = n.post?.author?.id === currentUserId;
+  const isSelfAction = n.actor?.id === currentUserId;
 
-const notificationContext = (n: Notification) => {
-  if (!n.post?.author) return null;
-  if (n.type === "like" || n.type === "comment") {
-    return `on ${n.post.author.displayName || n.post.author.username}'s post`;
+  const effectiveActor = isSelfAction ? "You" : actorName;
+  const effectiveAuthor = isOwnPost ? (isSelfAction ? "your own" : "your") : `${postAuthorName}'s`;
+
+  switch (n.type) {
+    case "like":
+      return `${effectiveActor} liked ${effectiveAuthor} post`;
+    case "comment":
+      return `${effectiveActor} commented on ${effectiveAuthor} post`;
+    case "follow":
+      return isSelfAction ? "You started following someone" : `${actorName} started following you`;
+    case "mention":
+      return `${actorName} mentioned you`;
+    default:
+      return `${actorName} interacted with you`;
   }
-  return null;
 };
 
 export default function NotificationsPage() {
+  const { user } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useGetNotifications({
@@ -91,7 +94,6 @@ export default function NotificationsPage() {
 
   const notifications = (data as any)?.notifications as Notification[] | undefined;
   const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
-  const actorLabel = (n?: Notification) => n?.actor?.displayName || n?.actor?.username || n?.sender?.displayName || n?.sender?.username || "Someone";
   const initial = (value?: string) => (value?.trim()?.[0] ?? "S").toUpperCase();
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: getGetNotificationsQueryKey() });
@@ -113,7 +115,7 @@ export default function NotificationsPage() {
 
   const handleOpenPost = (postId?: string) => {
     if (!postId) return;
-    window.location.href = `/post/${postId}`;
+    setLocation(`/post/${postId}`);
   };
 
   const handleDelete = (id: string) => {
@@ -192,15 +194,9 @@ export default function NotificationsPage() {
                 <p className="text-sm">
                   <Link href={`/profile/${n.actor?.id ?? n.sender?.id ?? ""}`}>
                     <span className="font-semibold hover:underline cursor-pointer">
-                      {notificationText(n.type, actorLabel(n))}
+                      {getNotificationText(n, user?.id)}
                     </span>
-                  </Link>{" "}
-                  {notificationContext(n) && (
-                    <>
-                      {" "}
-                      <span className="text-muted-foreground">{notificationContext(n)}</span>
-                    </>
-                  )}
+                  </Link>
                   {n.postId && (
                     <>
                       {" "}

@@ -36,6 +36,7 @@ function PostSkeleton() {
   );
 }
 
+
 function SuggestionsSidebar() {
   const { data, isLoading } = useGetSuggestedUsers({
     query: { queryKey: getGetSuggestedUsersQueryKey() },
@@ -44,18 +45,19 @@ function SuggestionsSidebar() {
 
   if (isLoading) {
     return (
-      <div className="bg-card rounded-2xl border border-border p-4">
-        <Skeleton className="h-5 w-32 mb-4" />
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-center gap-3 py-2">
-            <Skeleton className="w-9 h-9 rounded-full" />
-            <div className="flex-1">
-              <Skeleton className="h-3 w-24 mb-1" />
-              <Skeleton className="h-3 w-16" />
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-6 w-32 rounded-full" />
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <Skeleton className="w-11 h-11 rounded-full" />
+              <div className="flex-1">
+                <Skeleton className="h-3 w-24 mb-1.5" />
+                <Skeleton className="h-3 w-16" />
+              </div>
             </div>
-            <Skeleton className="h-8 w-16 rounded-md" />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     );
   }
@@ -63,15 +65,22 @@ function SuggestionsSidebar() {
   if (!suggestions?.length) return null;
 
   return (
-    <div className="bg-card rounded-2xl border border-border p-4">
-      <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-        <Users className="w-4 h-4 text-accent" />
-        People you may know
-      </h3>
-      <div className="divide-y divide-border/50">
-        {suggestions.map((u) => (
-          <UserSuggestionCard key={u.id} user={u} />
-        ))}
+    <div className="space-y-8">
+      <div className="flex flex-col gap-1">
+        <h3 className="font-black text-lg tracking-tight flex items-center gap-2 mb-4">
+          Suggested for you
+        </h3>
+        <div className="flex flex-col gap-1">
+          {suggestions.map((u) => (
+            <UserSuggestionCard key={u.id} user={u} />
+          ))}
+        </div>
+      </div>
+      
+      <div className="px-2 pt-4 border-t border-border/50">
+        <p className="text-[11px] font-bold text-muted-foreground/50 tracking-wider uppercase">
+          © 2026 SocialSphere from Gemini
+        </p>
       </div>
     </div>
   );
@@ -95,51 +104,69 @@ export default function FeedPage() {
 
   return (
     <Layout rightSlot={<SuggestionsSidebar />}>
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border px-4 py-3">
-        <h1 className="font-bold text-xl">Home</h1>
+      <div className="sticky top-0 z-40 glass-nav px-6 py-5">
+        <div className="flex items-center justify-between">
+          <h1 className="font-black text-2xl tracking-tighter">Home Feed</h1>
+          <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary cursor-pointer hover:bg-primary/20 transition-colors">
+            <Users className="w-5 h-5" />
+          </div>
+        </div>
       </div>
 
       <CreatePost />
 
-      {isLoading && page === 1 ? (
-        <div>
-          {[1, 2, 3].map((i) => <PostSkeleton key={i} />)}
-        </div>
-      ) : posts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-          <div className="bg-primary/10 rounded-full p-6 mb-4">
-            <Users className="w-12 h-12 text-primary" />
+      <div className="divide-y divide-border/50">
+        {isLoading && page === 1 ? (
+          <div>
+            {[1, 2, 3].map((i) => <PostSkeleton key={i} />)}
           </div>
-          <h2 className="text-xl font-semibold mb-2">Your feed is empty</h2>
-          <p className="text-muted-foreground text-sm max-w-xs">
-            Follow some people to see their posts here. Check out the Explore page to discover creators.
-          </p>
-        </div>
-      ) : (
-        <AnimatePresence initial={false}>
-          {posts.map((post: Post, index: number) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2, delay: index < 5 ? index * 0.05 : 0 }}
-            >
-              <PostCard post={post} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      )}
+        ) : posts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-32 text-center px-4">
+            <div className="w-24 h-24 bg-gradient-to-br from-primary/10 to-accent/10 rounded-[2.5rem] flex items-center justify-center mb-6">
+              <Users className="w-10 h-10 text-primary" />
+            </div>
+            <h2 className="text-2xl font-black tracking-tight mb-2">Sphere is Quiet</h2>
+            <p className="text-muted-foreground font-medium max-w-xs">
+              Follow some people to fill your feed with stories and moments.
+            </p>
+          </div>
+        ) : (
+          <AnimatePresence initial={false}>
+            {posts.map((post: Post, index: number) => (
+              <motion.div
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ 
+                  type: "spring",
+                  damping: 25,
+                  stiffness: 120,
+                  delay: index < 5 ? index * 0.1 : 0 
+                }}
+              >
+                <PostCard post={post} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        )}
+      </div>
 
       {hasMore && (
-        <div className="p-4 text-center">
+        <div className="p-8 text-center">
           <Button
             variant="outline"
             onClick={handleLoadMore}
             disabled={isFetching}
+            className="h-12 px-10 rounded-2xl font-bold border-2 hover:bg-muted transition-all active:scale-95"
             data-testid="load-more"
           >
-            {isFetching ? "Loading..." : "Load more"}
+            {isFetching ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent animate-spin rounded-full" />
+                Loading...
+              </div>
+            ) : "Explore More"}
           </Button>
         </div>
       )}

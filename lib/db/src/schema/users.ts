@@ -1,17 +1,13 @@
 import {
-  pgTable,
+  sqliteTable,
   text,
-  boolean,
-  timestamp,
-  pgEnum,
+  integer,
   index,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+import { z } from "zod";
 
-export const userRoleEnum = pgEnum("user_role", ["user", "admin"]);
-
-export const usersTable = pgTable(
+export const usersTable = sqliteTable(
   "users",
   {
     id: text("id").primaryKey(),
@@ -22,14 +18,14 @@ export const usersTable = pgTable(
     bio: text("bio"),
     profilePicture: text("profile_picture"),
     coverPhoto: text("cover_photo"),
-    isVerified: boolean("is_verified").notNull().default(false),
-    role: userRoleEnum("role").notNull().default("user"),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    isVerified: integer("is_verified", { mode: "boolean" }).notNull().default(false),
+    role: text("role", { enum: ["user", "admin"] }).notNull().default("user"),
+    createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
+      .default(new Date()),
   },
   (t) => [index("users_username_idx").on(t.username), index("users_email_idx").on(t.email)],
 );

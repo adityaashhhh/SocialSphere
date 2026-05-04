@@ -1,22 +1,14 @@
 import {
-  pgTable,
+  sqliteTable,
   text,
   integer,
-  timestamp,
-  pgEnum,
   index,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { usersTable } from "./users";
 
-export const visibilityEnum = pgEnum("post_visibility", [
-  "public",
-  "followers",
-  "private",
-]);
-
-export const postsTable = pgTable(
+export const postsTable = sqliteTable(
   "posts",
   {
     id: text("id").primaryKey(),
@@ -24,15 +16,15 @@ export const postsTable = pgTable(
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
     content: text("content").notNull(),
-    visibility: visibilityEnum("visibility").notNull().default("public"),
+    visibility: text("visibility", { enum: ["public", "followers", "private"] }).notNull().default("public"),
     likesCount: integer("likes_count").notNull().default(0),
     commentsCount: integer("comments_count").notNull().default(0),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
+      .default(new Date()),
   },
   (t) => [
     index("posts_author_idx").on(t.authorId),
@@ -40,15 +32,13 @@ export const postsTable = pgTable(
   ],
 );
 
-export const postMediaEnum = pgEnum("post_media_type", ["image", "video"]);
-
-export const postMediaTable = pgTable("post_media", {
+export const postMediaTable = sqliteTable("post_media", {
   id: text("id").primaryKey(),
   postId: text("post_id")
     .notNull()
     .references(() => postsTable.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
-  type: postMediaEnum("type").notNull(),
+  type: text("type", { enum: ["image", "video"] }).notNull(),
 });
 
 export const insertPostSchema = createInsertSchema(postsTable).omit({

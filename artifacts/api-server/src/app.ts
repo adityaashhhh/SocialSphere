@@ -6,9 +6,15 @@ import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app: Express = express();
 app.set("trust proxy", 1);
+
+app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
 
 app.use(
   helmet({

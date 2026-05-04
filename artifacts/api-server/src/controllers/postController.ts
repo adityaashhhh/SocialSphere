@@ -291,7 +291,7 @@ export async function togglePostLike(req: Request, res: Response): Promise<void>
       .where(eq(postsTable.id, postId));
     liked = true;
 
-    if (post.authorId !== userId) {
+    if (true) {
       await db.insert(notificationsTable).values({
         id: generateId(),
         recipientId: post.authorId,
