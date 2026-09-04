@@ -1,0 +1,30 @@
+
+
+flowchart TD
+    Start((Start)) --> OpenApp[Open Application]
+    OpenApp --> CheckAuth{Is User \nLogged In?}
+    
+    CheckAuth -- No --> Login[Enter Credentials & Login]
+    Login --> Verify{Credentials \nValid?}
+    Verify -- No --> ShowAuthError[Show Error] --> Login
+    Verify -- Yes --> SaveJWT[Save JWT Token] --> LoadFeed
+    
+    CheckAuth -- Yes --> LoadFeed[Load Home Feed]
+    
+    LoadFeed --> ReadFeed[Scroll & Read Posts]
+    ReadFeed --> Action{Choose Action}
+    
+    Action -- Create Post --> WritePost[Write Post Content]
+    WritePost --> Submit[Click Submit]
+    Submit --> Val{Data Valid?}
+    Val -- No --> PostErr[Show Error] --> WritePost
+    Val -- Yes --> SaveDB[Save Post to SQLite]
+    SaveDB --> Socket[Emit Real-time Event via Socket.io]
+    Socket --> UpdateFeed[Refresh Feed UI]
+    UpdateFeed --> ReadFeed
+    
+    Action -- Like/Comment --> Interact[Like/Comment on Post]
+    Interact --> ReadFeed
+    
+    Action -- Logout --> LogOut[Clear JWT & Logout]
+    LogOut --> End((End))

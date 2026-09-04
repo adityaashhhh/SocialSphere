@@ -1,0 +1,25 @@
+flowchart LR
+    %% Actors
+    User((User))
+    Guest((Guest))
+
+    %% System
+    subgraph SocialSphere
+        UC1([Register / Login])
+        UC2([Create Post])
+        UC3([Like & Comment])
+        UC4([Follow Users])
+        UC5([View Home Feed])
+        UC6([Send Direct Message])
+        UC7([Receive Real-time Notifications])
+    end
+
+    %% Relationships
+    Guest --> UC1
+    User --> UC1
+    User --> UC2
+    User --> UC3
+    User --> UC4
+    User --> UC5
+    User --> UC6
+    User --> UC7

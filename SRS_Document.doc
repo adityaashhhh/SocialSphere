@@ -1,0 +1,152 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><title>Software Requirement Specification</title></head>
+<body>
+<h1>Software Requirement Specification (SRS)</h1>
+<h2>Project Name: SocialSphere</h2>
+<p><b>Date:</b> May 2026<br>
+<b>Version:</b> 1.0 (Final)</p>
+<hr>
+
+<h2>1. Introduction</h2>
+<h3>1.1 Purpose</h3>
+<p>The purpose of this document is to present a detailed description of the SocialSphere web application. It will explain the purpose and features of the system, the interfaces of the system, what the system will do, the constraints under which it must operate, and how the system will react to external stimuli.</p>
+
+<h3>1.2 Document Conventions</h3>
+<p>This document follows standard IEEE SRS formatting. The terminology used aligns with modern web development standards (e.g., RESTful APIs, WebSockets, SPA).</p>
+
+<h3>1.3 Intended Audience</h3>
+<p>This document is intended for project evaluators, software developers, quality assurance testers, and academic examiners who require a deep understanding of the system's architecture and capabilities.</p>
+
+<h3>1.4 Project Scope</h3>
+<p>SocialSphere is a full-stack, real-time social networking application. It allows users to register, create profiles, share text and media posts, interact with others through likes and comments, and follow other users. The system leverages a monorepo architecture and provides real-time notifications and updates using WebSocket technology, ensuring a highly interactive user experience.</p>
+
+<hr>
+
+<h2>2. Overall Description</h2>
+<h3>2.1 Product Perspective</h3>
+<p>SocialSphere is a self-contained, monolithic web application deployed via a modern Node.js ecosystem. It uses a clear separation of concerns with a React-based frontend, an Express-based RESTful API backend, and an SQLite database managed via Drizzle ORM.</p>
+
+<h3>2.2 Product Functions</h3>
+<ul>
+<li><b>User Management:</b> Registration, secure login, logout, and profile management.</li>
+<li><b>Social Graph:</b> Ability to follow and unfollow other users.</li>
+<li><b>Content Creation:</b> Creating posts with adjustable visibility settings.</li>
+<li><b>Interactions:</b> Liking posts and commenting on posts.</li>
+<li><b>Real-time Engine:</b> Receiving instant notifications for interactions and instant feed updates.</li>
+</ul>
+
+<h3>2.3 User Classes and Characteristics</h3>
+<ul>
+<li><b>Guest / Unregistered User:</b> Can only view the login and registration screens. Cannot access feeds or user profiles.</li>
+<li><b>Authenticated User:</b> Can view the home feed, explore public posts, create content, manage their profile, and interact with other users.</li>
+</ul>
+
+<h3>2.4 Operating Environment</h3>
+<ul>
+<li><b>Client-Side:</b> Any modern web browser (Chrome, Firefox, Safari, Edge) with JavaScript enabled. Responsive design ensures compatibility with desktop, tablet, and mobile displays.</li>
+<li><b>Server-Side:</b> Node.js environment (v18+) running on Windows, Linux, or macOS.</li>
+<li><b>Database:</b> SQLite (local file-based relational database).</li>
+</ul>
+
+<h3>2.5 Design and Implementation Constraints</h3>
+<ul>
+<li>The system must be developed within a pnpm monorepo architecture.</li>
+<li>Real-time features depend heavily on an active and stable WebSocket connection.</li>
+<li>Passwords must never be stored in plain text.</li>
+</ul>
+
+<hr>
+
+<h2>3. System Features (Functional Requirements)</h2>
+<h3>3.1 User Authentication and Authorization</h3>
+<ul>
+<li><b>FR 1.1:</b> The system shall allow a user to register by providing an email, username, and password.</li>
+<li><b>FR 1.2:</b> The system shall hash passwords using <code>bcrypt</code> before storing them in the database.</li>
+<li><b>FR 1.3:</b> The system shall authenticate users and issue a JSON Web Token (JWT) upon successful login.</li>
+<li><b>FR 1.4:</b> The system shall restrict access to the Home Feed and Profile pages to authenticated users only.</li>
+</ul>
+
+<h3>3.2 Content Feed and Post Creation</h3>
+<ul>
+<li><b>FR 2.1:</b> The system shall allow an authenticated user to create a text post.</li>
+<li><b>FR 2.2:</b> The system shall display a personalized "Home Feed" containing posts from the user and the accounts they follow.</li>
+<li><b>FR 2.3:</b> The system shall support infinite scrolling (pagination) to load older posts continuously.</li>
+<li><b>FR 2.4:</b> The system shall provide an "Explore" feed to discover public posts from users they do not follow.</li>
+</ul>
+
+<h3>3.3 Social Interactions</h3>
+<ul>
+<li><b>FR 3.1:</b> The system shall allow users to "Like" or "Unlike" a post or comment.</li>
+<li><b>FR 3.2:</b> The system shall allow users to reply to posts by adding a "Comment".</li>
+<li><b>FR 3.3:</b> The system shall allow users to follow other accounts, adding the followed account's content to their Home Feed.</li>
+</ul>
+
+<h3>3.4 Real-Time Notifications</h3>
+<ul>
+<li><b>FR 4.1:</b> The system shall establish a WebSocket (<code>Socket.io</code>) connection for authenticated users.</li>
+<li><b>FR 4.2:</b> The system shall push a real-time notification to a user when someone likes their post or comments on their post.</li>
+<li><b>FR 4.3:</b> The system shall update the feed dynamically without requiring a page refresh when a new post is created by a followed user.</li>
+</ul>
+
+<hr>
+
+<h2>4. External Interface Requirements</h2>
+<h3>4.1 User Interfaces</h3>
+<ul>
+<li>The frontend UI is designed using <b>Tailwind CSS</b> and <b>shadcn/ui</b>.</li>
+<li>The application provides a persistent navigation sidebar (or bottom bar on mobile).</li>
+<li>Alerts and toasts will be used to notify the user of successful actions or errors (e.g., "Post created successfully").</li>
+</ul>
+
+<h3>4.2 Software Interfaces</h3>
+<ul>
+<li><b>Database Interface:</b> The application communicates with the SQLite database via Drizzle ORM.</li>
+<li><b>API Interface:</b> The frontend communicates with the backend via a RESTful API defined by an OpenAPI specification. Validation is enforced on both ends using Zod schemas.</li>
+</ul>
+
+<h3>4.3 Communication Interfaces</h3>
+<ul>
+<li><b>HTTP/HTTPS:</b> Standard REST API requests for fetching data and submitting forms.</li>
+<li><b>WebSockets (WS/WSS):</b> Persistent bidirectional communication channel for real-time events.</li>
+</ul>
+
+<hr>
+
+<h2>5. Non-Functional Requirements</h2>
+<h3>5.1 Performance Requirements</h3>
+<ul>
+<li>The application shall load the initial Home Feed within 2 seconds under normal network conditions.</li>
+<li>API response times for standard queries (e.g., liking a post) should be under 200 milliseconds.</li>
+</ul>
+
+<h3>5.2 Security Requirements</h3>
+<ul>
+<li>All API endpoints except <code>/login</code> and <code>/register</code> must require a valid JWT token in the Authorization header.</li>
+<li>The system must prevent SQL Injection attacks by utilizing Drizzle ORM's parameterized queries.</li>
+<li>The system must prevent Cross-Site Scripting (XSS) by using React's built-in DOM escaping mechanisms.</li>
+<li>API endpoints shall implement Rate Limiting to prevent Denial of Service (DoS) and brute-force attacks.</li>
+</ul>
+
+<h3>5.3 Software Quality Attributes</h3>
+<ul>
+<li><b>Maintainability:</b> The use of a monorepo, strict TypeScript typing, and Contract-Driven Development ensures high maintainability.</li>
+<li><b>Reliability:</b> Auto-generated API clients (TanStack Query) ensure that frontend data fetching is perfectly synchronized with backend responses.</li>
+<li><b>Scalability:</b> The stateless nature of the JWT authentication allows the Express backend to be horizontally scaled if migrated to a larger database like PostgreSQL in the future.</li>
+</ul>
+
+<hr>
+
+<h2>6. Technology Stack Summary</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+<tr><th>Layer</th><th>Technology Used</th></tr>
+<tr><td><b>Frontend Framework</b></td><td>React 18, Vite</td></tr>
+<tr><td><b>Styling & UI</b></td><td>Tailwind CSS v4, shadcn/ui, Framer Motion</td></tr>
+<tr><td><b>Routing & State</b></td><td>Wouter, TanStack React Query v5</td></tr>
+<tr><td><b>Backend Framework</b></td><td>Node.js, Express.js v5</td></tr>
+<tr><td><b>Real-time Engine</b></td><td>Socket.io</td></tr>
+<tr><td><b>Database</b></td><td>SQLite, Drizzle ORM</td></tr>
+<tr><td><b>Validation & Types</b></td><td>Zod, OpenAPI (Orval)</td></tr>
+<tr><td><b>Security</b></td><td>JWT, bcryptjs, Helmet</td></tr>
+</table>
+</body>
+</html>

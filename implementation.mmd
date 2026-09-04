@@ -1,0 +1,20 @@
+flowchart TD
+    subgraph Client [Client Side]
+        Browser[Web Browser / React App]
+    end
+
+    subgraph Server [Backend Server]
+        API[Node.js Express Server]
+        Sockets[Socket.io Server]
+    end
+
+    subgraph DB [Database Layer]
+        SQLite[(SQLite Database)]
+        ORM[Drizzle ORM]
+    end
+
+    Browser -- "HTTP REST (TanStack Query)" --> API
+    Browser <-- "WebSockets (Real-time)" --> Sockets
+    API <--> ORM
+    Sockets <--> API
+    ORM <--> SQLite

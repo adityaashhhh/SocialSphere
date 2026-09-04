@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant U as User (Frontend)
+    participant A as API Server
+    participant DB as SQLite (Drizzle)
+    participant S as Socket.io
+
+    U->>A: POST /api/posts (JWT Token + Content)
+    activate A
+    A->>A: Validate JWT & Payload (Zod)
+    A->>DB: INSERT INTO posts
+    activate DB
+    DB-->>A: Post Created
+    deactivate DB
+    A->>S: emit('newPost', postData)
+    activate S
+    S-->>U: Broadcast to Followers
+    deactivate S
+    A-->>U: 201 Created Response
+    deactivate A
+    U->>U: Update UI & Cache (React Query)

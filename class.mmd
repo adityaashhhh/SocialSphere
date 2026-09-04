@@ -1,0 +1,39 @@
+classDiagram
+    class User {
+        +String id
+        +String email
+        +String password
+        +String username
+        +String displayName
+        +String avatarUrl
+    }
+    class Post {
+        +String id
+        +String userId
+        +String content
+        +String mediaUrl
+        +String visibility
+        +DateTime createdAt
+    }
+    class Comment {
+        +String id
+        +String postId
+        +String userId
+        +String content
+    }
+    class Like {
+        +String id
+        +String userId
+        +String postId
+        +String commentId
+    }
+    class Follow {
+        +String followerId
+        +String followingId
+    }
+    User "1" -- "*" Post : writes
+    User "1" -- "*" Comment : writes
+    User "1" -- "*" Like : gives
+    User "1" -- "*" Follow : has
+    Post "1" -- "*" Comment : contains
+    Post "1" -- "*" Like : receives
